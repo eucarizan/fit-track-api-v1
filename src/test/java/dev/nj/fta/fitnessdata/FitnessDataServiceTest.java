@@ -15,7 +15,7 @@ public class FitnessDataServiceTest {
     private FitnessDataRepository fitnessDataRepository;
 
     @InjectMocks
-    private FitnessDataService fitnessDataService;
+    private FitnessDataServiceImpl fitnessDataService;
 
     @Test
     void createFitnessData_validRequest_savesData() {
