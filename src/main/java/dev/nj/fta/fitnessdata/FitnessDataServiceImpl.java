@@ -16,6 +16,9 @@ public class FitnessDataServiceImpl implements FitnessDataService {
 
     @Override
     public void createFitnessData(FitnessData fitnessData) {
-        fitnessDataRepository.save(fitnessData);
+        logger.debug("Creating fitnessData: username={}, activity={}, duration={}, calories={}",
+                fitnessData.username, fitnessData.activity, fitnessData.duration, fitnessData.calories);
+        FitnessData savedData = fitnessDataRepository.save(fitnessData);
+        logger.debug("FitnessData persisted: id={}", savedData.getId());
     }
 }
