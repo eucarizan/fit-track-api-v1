@@ -1,9 +1,12 @@
 package dev.nj.fta.fitnessdata;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+
+import java.time.LocalDateTime;
 
 @Entity
 public class FitnessData {
@@ -12,13 +15,16 @@ public class FitnessData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    String username;
+    private String username;
 
-    String activity;
+    private String activity;
 
-    int duration;
+    private int duration;
 
-    int calories;
+    private int calories;
+
+    @JsonIgnore
+    private LocalDateTime created;
 
     public FitnessData() {}
 
@@ -27,6 +33,7 @@ public class FitnessData {
         this.activity = activity;
         this.duration = duration;
         this.calories = calories;
+        this.created = LocalDateTime.now();
     }
 
     public Long getId() {

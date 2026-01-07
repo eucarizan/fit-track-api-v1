@@ -20,6 +20,9 @@ public class FitnessDataServiceTest {
     @Mock
     private FitnessDataRepository fitnessDataRepository;
 
+    @Mock
+    private FitnessDataMapper fitnessDataMapper;
+
     @InjectMocks
     private FitnessDataServiceImpl fitnessDataService;
 
@@ -38,7 +41,7 @@ public class FitnessDataServiceTest {
         FitnessData data1 = new FitnessData("user-12", "swimming", 950, 320);
         FitnessData data2 = new FitnessData("user-12", "hiking", 4800, 740);
 
-        when(fitnessDataRepository.findAll(any(Sort.class))).thenReturn(List.of(data2, data1));
+        when(fitnessDataRepository.findAllByOrderByCreatedDesc()).thenReturn(List.of(data2, data1));
         when(fitnessDataMapper.toResponse(data2)).thenReturn(
                 new FitnessDataResponse(2L, "user-12", "hiking", 4800, 740));
         when(fitnessDataMapper.toResponse(data1)).thenReturn(
@@ -47,7 +50,7 @@ public class FitnessDataServiceTest {
         List<FitnessDataResponse> responseList = fitnessDataService.getAllData();
 
         assertEquals(2, responseList.size());
-        assertEquals(2L, responseList.get(0).id);
-        assertEquals(1L, responseList.get(1).id);
+        assertEquals(2L, responseList.get(0).id());
+        assertEquals(1L, responseList.get(1).id());
     }
 }
