@@ -47,7 +47,11 @@ public class FitnessDataControllerTest {
 
         mockMvc.perform(get(URL))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(responses.size()))
                 .andExpect(jsonPath("$[0].id").value(2))
-                .andExpect(jsonPath("$[1].id").value(1));
+                .andExpect(jsonPath("$[0].username").value("user-12"))
+                .andExpect(jsonPath("$[0].activity").value("hiking"))
+                .andExpect(jsonPath("$[1].id").value(1))
+                .andExpect(jsonPath("$[1].activity").value("swimming"));
     }
 }
