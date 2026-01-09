@@ -24,7 +24,7 @@ public class FitnessData {
     private int calories;
 
     @JsonIgnore
-    private LocalDateTime created;
+    private LocalDateTime created = LocalDateTime.now();
 
     public FitnessData() {}
 
@@ -33,7 +33,6 @@ public class FitnessData {
         this.activity = activity;
         this.duration = duration;
         this.calories = calories;
-        this.created = LocalDateTime.now();
     }
 
     public Long getId() {
