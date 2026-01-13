@@ -14,7 +14,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static dev.nj.fta.TestUtils.asJsonString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -51,5 +53,20 @@ public class FitnessDataControllerIT {
         var allData = fitnessDataRepository.findAll();
         assertEquals(1, allData.size());
         assertEquals("user-12", allData.get(0).getUsername());
+    }
+
+    @Test
+    void it_getFitnessData_returns200() throws Exception {
+        FitnessData data1 = new FitnessData("user-12", "swimming", 950, 320);
+        fitnessDataRepository.save(data1);
+        Thread.sleep(10);
+        FitnessData data2 = new FitnessData("user-12", "hiking", 4800, 740);
+        fitnessDataRepository.save(data2);
+
+        mockMvc.perform(get(URL))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].activity").value("hiking"))
+                .andExpect(jsonPath("$[1].activity").value("swimming"));
     }
 }
