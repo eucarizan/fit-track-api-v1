@@ -30,26 +30,62 @@ public class DeveloperControllerTest {
 
     @Test
     void createDeveloper_validRequest_returns201AndLocationHeader() throws Exception {
-        Developer developer = new Developer("johndoe@gmail.com", "qwerty");
+        DeveloperRequest request = new DeveloperRequest("johndoe@gmail.com", "qwerty");
 
         when(developerService.createDeveloper(any(DeveloperRequest.class))).thenReturn(9062L);
 
         mockMvc.perform(post(URL)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(developer)))
+                        .content(asJsonString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/api/developers/9062"));
     }
 
     @Test
     void createDeveloper_nullEmail_returns400() throws Exception {
-        Developer developer = new Developer(null, "qwerty");
+        DeveloperRequest request = new DeveloperRequest(null, "qwerty");
 
         mockMvc.perform(post(URL)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(developer)))
+                        .content(asJsonString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.messages").isArray())
                 .andExpect(jsonPath("$.messages").value(hasItem("Email is required")));
+    }
+
+    @Test
+    void createDeveloper_emptyEmail_returns400() throws Exception {
+        DeveloperRequest request = new DeveloperRequest("", "qwerty");
+
+        mockMvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.messages").isArray())
+                .andExpect(jsonPath("$.messages").value(hasItem("Email is required")));
+    }
+
+    @Test
+    void createDeveloper_nullPassword_returns400() throws Exception {
+        DeveloperRequest request = new DeveloperRequest("johndoe@gmail.com", null);
+
+        mockMvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.messages").isArray())
+                .andExpect(jsonPath("$.messages").value(hasItem("Password is required")));
+    }
+
+    @Test
+    void createDeveloper_emptyPassword_returns400() throws Exception {
+        DeveloperRequest request = new DeveloperRequest("johndoe@gmail.com", "");
+
+        mockMvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.messages").isArray())
+                .andExpect(jsonPath("$.messages").value(hasItem("Password is required")));
     }
 }
