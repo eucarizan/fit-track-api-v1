@@ -2,6 +2,7 @@ package dev.nj.fta.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,6 +20,7 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/shutdown").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/tracker").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/developers/signup").permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessions -> sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
