@@ -13,8 +13,7 @@ import static dev.nj.fta.TestUtils.asJsonString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(DeveloperController.class)
 @Import(SecurityConfig.class)
@@ -39,5 +38,16 @@ public class DeveloperControllerTest {
                         .content(asJsonString(developer)))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/api/developers/9062"));
+    }
+
+    @Test
+    void createDeveloper_nullEmail_returns400() throws Exception {
+        Developer developer = new Developer(null, "qwerty");
+
+        mockMvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(developer)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Email is required."));
     }
 }
