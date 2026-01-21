@@ -17,18 +17,23 @@ public class DeveloperServiceTest {
     @Mock
     private DeveloperRepository developerRepository;
 
+    @Mock
+    private DeveloperMapper developerMapper;
+
     @InjectMocks
     private DeveloperServiceImpl developerService;
 
     @Test
     void createDeveloper_validRequest_savesDataAndReturnsId() {
         Developer developer = new Developer("johndoe@gmail.com", "qwerty");
+        DeveloperRequest request = new DeveloperRequest("johndoe@gmail.com", "qwerty");
         Developer savedDeveloper = new Developer("johndoe@gmail.com",  "qwerty");
         ReflectionTestUtils.setField(savedDeveloper, "id", 9062L);
 
         when(developerRepository.save(developer)).thenReturn(savedDeveloper);
+        when(developerMapper.toEntity(request)).thenReturn(developer);
 
-        Long id = developerService.createDeveloper(developer);
+        Long id = developerService.createDeveloper(request);
 
         verify(developerRepository).save(developer);
         assertEquals(9062L, id);

@@ -1,5 +1,6 @@
 package dev.nj.fta.developer;
 
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +24,10 @@ public class DeveloperController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> createDeveloper(@RequestBody Developer developer) {
-        logger.info("POST /api/developers/signup: email={}", developer.getEmail());
+    public ResponseEntity<Void> createDeveloper(@Valid @RequestBody DeveloperRequest request) {
+        logger.info("POST /api/developers/signup: email={}", request.email());
 
-        Long id = developerService.createDeveloper(developer);
+        Long id = developerService.createDeveloper(request);
         return ResponseEntity.created(URI.create("/api/developers/" + id)).build();
     }
 }
