@@ -66,6 +66,18 @@ public class DeveloperControllerTest {
     }
 
     @Test
+    void createDeveloper_invalidEmail_returns400() throws Exception {
+        DeveloperRequest request = new DeveloperRequest("not-an-email", "qwerty");
+
+        mockMvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.messages").isArray())
+                .andExpect(jsonPath("$.messages").value(hasItem("Incorrect email format")));
+    }
+
+    @Test
     void createDeveloper_nullPassword_returns400() throws Exception {
         DeveloperRequest request = new DeveloperRequest("johndoe@gmail.com", null);
 
