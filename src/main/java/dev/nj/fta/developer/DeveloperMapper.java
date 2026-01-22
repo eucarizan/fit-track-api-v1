@@ -10,4 +10,11 @@ public class DeveloperMapper {
                 request.password()
         );
     }
+
+    public DeveloperResponse toResponse(Developer developer) {
+        return new DeveloperResponse(
+                developer.getId(),
+                developer.getEmail()
+        );
+    }
 }

@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class DeveloperServiceImpl implements DeveloperService {
 
@@ -25,5 +27,18 @@ public class DeveloperServiceImpl implements DeveloperService {
         Developer saved = developerRepository.save(developerMapper.toEntity(request));
         logger.debug("Developer persisted: id={}", saved.getId());
         return saved.getId();
+    }
+
+    @Override
+    public DeveloperResponse getDeveloperById(Long id) {
+        logger.debug("Getting developer: id={}", id);
+        Optional<Developer> developer = developerRepository.findById(id);
+
+        if (developer.isEmpty()) {
+            throw new DeveloperNotFoundException();
+        }
+
+        logger.debug("Developer found: id={}", developer.get().getId());
+        return developerMapper.toResponse(developer.get());
     }
 }
