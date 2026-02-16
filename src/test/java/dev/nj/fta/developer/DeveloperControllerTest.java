@@ -145,4 +145,17 @@ public class DeveloperControllerTest {
                 .with(httpBasic("johndoe@gmail.com", "qwerty")))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void getDeveloper_authenticatedOwner_notFound_returns404() throws Exception {
+        Developer developer = new Developer("johndoe@gmail.com", new BCryptPasswordEncoder().encode("qwerty"));
+        ReflectionTestUtils.setField(developer, "id", 9062L);
+
+        when(developerRepository.findByEmail("johndoe@gmail.com")).thenReturn(Optional.of(developer));
+        when(developerService.getDeveloperById(9062L)).thenThrow(new DeveloperNotFoundException("Developer with id 9062L does not exist"));
+
+        mockMvc.perform(get(GET_DEVELOPER, 9062L)
+                .with(httpBasic("johndoe@gmail.com", "qwerty")))
+                .andExpect(status().isNotFound());
+    }
 }
