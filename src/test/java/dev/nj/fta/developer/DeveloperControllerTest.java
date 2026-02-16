@@ -1,13 +1,18 @@
 package dev.nj.fta.developer;
 
 import dev.nj.fta.config.SecurityConfig;
+import dev.nj.fta.config.TestSecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Optional;
 
 import static dev.nj.fta.TestUtils.asJsonString;
 import static org.hamcrest.Matchers.hasItem;
@@ -19,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(DeveloperController.class)
-@Import(SecurityConfig.class)
+@Import({TestSecurityConfig.class, DeveloperUserDetailsService.class})
 public class DeveloperControllerTest {
 
     private static final String DEVELOPERS_SIGNUP = "/api/developers/signup";
@@ -30,6 +35,9 @@ public class DeveloperControllerTest {
 
     @MockitoBean
     private DeveloperService developerService;
+
+    @MockitoBean
+    private DeveloperRepository developerRepository;
 
     @Test
     void createDeveloper_validRequest_returns201AndLocationHeader() throws Exception {
@@ -106,7 +114,11 @@ public class DeveloperControllerTest {
 
     @Test
     void getDeveloper_authenticatedOwner_returns200AndJson() throws Exception {
+        Developer developer = new Developer("johndoe@gmail.com", new BCryptPasswordEncoder().encode("qwerty"));
+        ReflectionTestUtils.setField(developer, "id", 9062L);
         DeveloperResponse response = new DeveloperResponse(9062L, "johndoe@gmail.com");
+
+        when(developerRepository.findByEmail("johndoe@gmail.com")).thenReturn(Optional.of(developer));
         when(developerService.getDeveloperById(9062L)).thenReturn(response);
 
         mockMvc.perform(get(GET_DEVELOPER, 9062L)
