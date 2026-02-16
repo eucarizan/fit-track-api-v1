@@ -127,4 +127,10 @@ public class DeveloperControllerTest {
                 .andExpect(jsonPath("$.id").value(9062L))
                 .andExpect(jsonPath("$.email").value("johndoe@gmail.com"));
     }
+
+    @Test
+    void getDeveloper_unauthenticated_returns401()  throws Exception {
+        mockMvc.perform(get(GET_DEVELOPER, 9999L))
+                .andExpect(status().isUnauthorized());
+    }
 }
