@@ -13,6 +13,8 @@ import static dev.nj.fta.TestUtils.asJsonString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -20,7 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(SecurityConfig.class)
 public class DeveloperControllerTest {
 
-    private static final String URL = "/api/developers/signup";
+    private static final String DEVELOPERS_SIGNUP = "/api/developers/signup";
+    private static final String GET_DEVELOPER = "/api/developers/{id}";
 
     @Autowired
     MockMvc mockMvc;
@@ -34,7 +37,7 @@ public class DeveloperControllerTest {
 
         when(developerService.createDeveloper(any(DeveloperRequest.class))).thenReturn(9062L);
 
-        mockMvc.perform(post(URL)
+        mockMvc.perform(post(DEVELOPERS_SIGNUP)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isCreated())
@@ -45,7 +48,7 @@ public class DeveloperControllerTest {
     void createDeveloper_nullEmail_returns400() throws Exception {
         DeveloperRequest request = new DeveloperRequest(null, "qwerty");
 
-        mockMvc.perform(post(URL)
+        mockMvc.perform(post(DEVELOPERS_SIGNUP)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isBadRequest())
@@ -57,7 +60,7 @@ public class DeveloperControllerTest {
     void createDeveloper_emptyEmail_returns400() throws Exception {
         DeveloperRequest request = new DeveloperRequest("", "qwerty");
 
-        mockMvc.perform(post(URL)
+        mockMvc.perform(post(DEVELOPERS_SIGNUP)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isBadRequest())
@@ -69,7 +72,7 @@ public class DeveloperControllerTest {
     void createDeveloper_invalidEmail_returns400() throws Exception {
         DeveloperRequest request = new DeveloperRequest("not-an-email", "qwerty");
 
-        mockMvc.perform(post(URL)
+        mockMvc.perform(post(DEVELOPERS_SIGNUP)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isBadRequest())
@@ -81,7 +84,7 @@ public class DeveloperControllerTest {
     void createDeveloper_nullPassword_returns400() throws Exception {
         DeveloperRequest request = new DeveloperRequest("johndoe@gmail.com", null);
 
-        mockMvc.perform(post(URL)
+        mockMvc.perform(post(DEVELOPERS_SIGNUP)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isBadRequest())
@@ -93,11 +96,23 @@ public class DeveloperControllerTest {
     void createDeveloper_emptyPassword_returns400() throws Exception {
         DeveloperRequest request = new DeveloperRequest("johndoe@gmail.com", "");
 
-        mockMvc.perform(post(URL)
+        mockMvc.perform(post(DEVELOPERS_SIGNUP)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.messages").isArray())
                 .andExpect(jsonPath("$.messages").value(hasItem("Password is required")));
+    }
+
+    @Test
+    void getDeveloper_authenticatedOwner_returns200AndJson() throws Exception {
+        DeveloperResponse response = new DeveloperResponse(9062L, "johndoe@gmail.com");
+        when(developerService.getDeveloperById(9062L)).thenReturn(response);
+
+        mockMvc.perform(get(GET_DEVELOPER, 9062L)
+                        .with(httpBasic("johndoe@gmail.com", "qwerty")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(9062L))
+                .andExpect(jsonPath("$.email").value("johndoe@gmail.com"));
     }
 }
