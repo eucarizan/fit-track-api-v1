@@ -1,5 +1,6 @@
 package dev.nj.fta.config;
 
+import dev.nj.fta.developer.DeveloperNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -26,5 +27,11 @@ public class GlobalExceptionHandler {
 
         LOGGER.warn("Validation errors: {}", errors);
         return ResponseEntity.badRequest().body(Map.of("messages", errors));
+    }
+
+    @ExceptionHandler(DeveloperNotFoundException.class)
+    public ResponseEntity<?> handleDeveloperNotFoundException(DeveloperNotFoundException ex) {
+        LOGGER.warn("Developer not found: {}", ex.getMessage());
+        return ResponseEntity.notFound().build();
     }
 }
