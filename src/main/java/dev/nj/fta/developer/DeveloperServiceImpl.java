@@ -35,7 +35,7 @@ public class DeveloperServiceImpl implements DeveloperService {
         Optional<Developer> developer = developerRepository.findById(id);
 
         if (developer.isEmpty()) {
-            throw new DeveloperNotFoundException();
+            throw new DeveloperNotFoundException("Developer with id " + id + " does not exist");
         }
 
         logger.debug("Developer found: id={}", developer.get().getId());

@@ -10,6 +10,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -53,5 +54,18 @@ public class DeveloperServiceTest {
 
         assertEquals(9062L, response.id());
         assertEquals("johndoe@gmail.com", response.email());
+    }
+
+    @Test
+    void getDeveloper_nonExisting_throwsDeveloperNotFoundException() {
+        when(developerRepository.findById(9999L)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(
+                DeveloperNotFoundException.class,
+                () -> developerService.getDeveloperById(9999L)
+        );
+
+        assertEquals("Developer with id 9999 does not exist", exception.getMessage());
+        verify(developerRepository).findById(9999L);
     }
 }
