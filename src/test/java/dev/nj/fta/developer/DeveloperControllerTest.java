@@ -133,4 +133,16 @@ public class DeveloperControllerTest {
         mockMvc.perform(get(GET_DEVELOPER, 9999L))
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    void getDeveloper_authenticatedNonOwner_returns403() throws Exception {
+        Developer developer = new Developer("johndoe@gmail.com", new BCryptPasswordEncoder().encode("qwerty"));
+        ReflectionTestUtils.setField(developer, "id", 9062L);
+
+        when(developerRepository.findByEmail("johndoe@gmail.com")).thenReturn(Optional.of(developer));
+
+        mockMvc.perform(get(GET_DEVELOPER, 9999L)
+                .with(httpBasic("johndoe@gmail.com", "qwerty")))
+                .andExpect(status().isForbidden());
+    }
 }
