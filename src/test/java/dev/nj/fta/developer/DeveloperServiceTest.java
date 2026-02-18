@@ -43,6 +43,15 @@ public class DeveloperServiceTest {
     }
 
     @Test
+    void createDeveloper_duplicateEmail_throwsDeveloperAlreadyExistsException() {
+        DeveloperRequest request = new DeveloperRequest("johndoe@gmail.com", "qwerty");
+
+        when(developerRepository.findByEmail("johndoe@gmail.com")).thenReturn(Optional.of(new Developer("johndoe@gmail.com", "qwerty")));
+
+        assertThrows(DeveloperAlreadyExistsException.class, () -> developerService.createDeveloper(request));
+    }
+
+    @Test
     void getDeveloper_byId_returnsDeveloper() {
         Developer developer = new Developer("johndoe@gmail.com", "qwerty");
         DeveloperResponse developerResponse = new DeveloperResponse(9062L, "johndoe@gmail.com");
