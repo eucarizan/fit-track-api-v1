@@ -113,6 +113,19 @@ public class DeveloperControllerTest {
     }
 
     @Test
+    void createDeveloper_duplicateEmail_returns400() throws Exception {
+        DeveloperRequest request = new DeveloperRequest("johndoe@gmail.com", "qwerty");
+
+        when(developerService.createDeveloper(any(DeveloperRequest.class)))
+                .thenThrow(new DeveloperAlreadyExistsException());
+
+        mockMvc.perform(post(DEVELOPERS_SIGNUP)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void getDeveloper_authenticatedOwner_returns200AndJson() throws Exception {
         Developer developer = new Developer("johndoe@gmail.com", new BCryptPasswordEncoder().encode("qwerty"));
         ReflectionTestUtils.setField(developer, "id", 9062L);
