@@ -24,7 +24,11 @@ public class DeveloperServiceImpl implements DeveloperService {
     public Long createDeveloper(DeveloperRequest request) {
         logger.debug("Creating developer: email={}", request.email());
 
+        if (developerRepository.findByEmail(request.email()).isPresent()) {
+            throw new DeveloperAlreadyExistsException();
+        }
         Developer saved = developerRepository.save(developerMapper.toEntity(request));
+
         logger.debug("Developer persisted: id={}", saved.getId());
         return saved.getId();
     }
