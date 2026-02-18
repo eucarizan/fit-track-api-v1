@@ -1,13 +1,21 @@
 package dev.nj.fta.developer;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DeveloperMapper {
+
+    private final PasswordEncoder passwordEncoder;
+
+    public DeveloperMapper(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
     public Developer toEntity(DeveloperRequest request) {
         return new Developer(
                 request.email(),
-                request.password()
+                passwordEncoder.encode(request.password())
         );
     }
 
