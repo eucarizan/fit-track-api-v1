@@ -1,5 +1,6 @@
 package dev.nj.fta.config;
 
+import dev.nj.fta.developer.DeveloperAlreadyExistsException;
 import dev.nj.fta.developer.DeveloperNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,5 +34,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleDeveloperNotFoundException(DeveloperNotFoundException ex) {
         LOGGER.warn("Developer not found: {}", ex.getMessage());
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(DeveloperAlreadyExistsException.class)
+    public ResponseEntity<?> handleDeveloperAlreadyExistsException(DeveloperAlreadyExistsException ex) {
+        LOGGER.warn("Developer already exists");
+        return ResponseEntity.badRequest().build();
     }
 }
